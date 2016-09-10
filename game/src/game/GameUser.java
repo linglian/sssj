@@ -1,6 +1,7 @@
 package game;
 
 //********************************************
+import build.Build;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import npc.NpcObject;
@@ -49,8 +50,11 @@ public class GameUser {
     Vector3 mouseOfWorld;
     Vector3 draggedMouseOfWorld;
     private NpcObject[] chooseNpc;
-    NpcObject choseNpc;
     int chooseNpcNum;
+    private Build[] chooseBuild;
+    int chooseBuildNum;
+    NpcObject choseNpc;
+    Build choseBuild;
     public static final int MOVE_STOP = 0;
     public static final int MOVE_UP = 1;
     public static final int MOVE_DOWN = 2;
@@ -130,13 +134,90 @@ public class GameUser {
         this.maxpeopleNumber = maxpeopleNumber;
     }
 
-    
+    public Build getChoseBuild() {
+        return choseBuild;
+    }
+
+    public void setChoseBuild(Build choseBuild) {
+        this.choseBuild = choseBuild;
+        if (chooseBuild != null) {
+            this.choseNpc = null;
+        }
+    }
+
+    public void setChooseBuild(Build[] tempBuild, int num) {
+        try {
+            lock.writeLock().lock();
+            chooseBuild = tempBuild;
+            chooseBuildNum = num;
+            if (chooseBuild != null) {
+                this.chooseNpcNum = 0;
+                this.chooseNpc = null;
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public Build[] getChooseBuild() {
+        try {
+            lock.readLock().lock();
+            return chooseBuild;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public int getChooseBuildNum() {
+        try {
+            lock.readLock().lock();
+            return chooseBuildNum;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
     public NpcObject getChoseNpc() {
         return choseNpc;
     }
 
     public void setChoseNpc(NpcObject choseNpc) {
         this.choseNpc = choseNpc;
+        if (chooseNpc != null) {
+            this.choseBuild = null;
+        }
+    }
+
+    public void setChooseNpc(NpcObject[] tempNpc, int num) {
+        try {
+            lock.writeLock().lock();
+            chooseNpc = tempNpc;
+            chooseNpcNum = num;
+            if (chooseNpc != null) {
+                this.chooseBuildNum = 0;
+                this.chooseBuild = null;
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
+    }
+
+    public NpcObject[] getChooseNpc() {
+        try {
+            lock.readLock().lock();
+            return chooseNpc;
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    public int getChooseNpcNum() {
+        try {
+            lock.readLock().lock();
+            return chooseNpcNum;
+        } finally {
+            lock.readLock().unlock();
+        }
     }
 
     public int getGameSpeed() {
@@ -260,34 +341,6 @@ public class GameUser {
 
     public void setIsDragged(boolean isDragged) {
         this.isDragged = isDragged;
-    }
-
-    public void setChooseNpc(NpcObject[] tempNpc, int num) {
-        try {
-            lock.writeLock().lock();
-            chooseNpc = tempNpc;
-            chooseNpcNum = num;
-        } finally {
-            lock.writeLock().unlock();
-        }
-    }
-
-    public NpcObject[] getChooseNpc() {
-        try {
-            lock.readLock().lock();
-            return chooseNpc;
-        } finally {
-            lock.readLock().unlock();
-        }
-    }
-
-    public int getChooseNpcNum() {
-        try {
-            lock.readLock().lock();
-            return chooseNpcNum;
-        } finally {
-            lock.readLock().unlock();
-        }
     }
 
     public int getLastMouseX() {

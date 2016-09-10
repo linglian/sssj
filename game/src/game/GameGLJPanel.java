@@ -53,7 +53,7 @@ public class GameGLJPanel extends GLJPanel {
     LinkedList<GameString> strLinkedList;
     Image[] uiImage;
     Color[] color;
-    int uiNumber = 7;
+    int uiNumber = 8;
     public static Font gameFont;
     public static Image[] gnImage;
     public static int gnImageNumber = 42;
@@ -108,6 +108,7 @@ public class GameGLJPanel extends GLJPanel {
         s.init();
         gameManage.addGameGUI(s);
     }
+
     public void init2() {
         //读取状态图片
         ztImage = new Image[ztImageNumber];
@@ -199,6 +200,10 @@ public class GameGLJPanel extends GLJPanel {
         //画人物栏
         g.drawImage(uiImage[5], (int) (this.getWidth() * 0.525f), (int) (this.getHeight() * 0.73f), (int) (this.getWidth() * 0.43f), (int) (this.getHeight() * 0.22f), null);
         g.drawImage(uiImage[3], (int) (this.getWidth() * 0.332f), (int) (this.getHeight() * 0.675f), (int) (this.getWidth() * 0.65f), (int) (this.getHeight() * 0.3025f), null);
+
+        if (gameManage.getUser().chooseNpcNum <= 0) {
+            g.drawImage(uiImage[7], (int) (this.getWidth() * 0.345f), (int) (this.getHeight() * 0.77f), (int) (this.getWidth() * 0.15f), (int) (this.getHeight() * 0.19f), null);
+        }
     }
 
     public void drawMap(Graphics g) {
@@ -210,13 +215,13 @@ public class GameGLJPanel extends GLJPanel {
         int size = build.getSize();
         tg.setColor(Color.blue);
         int team = gameManage.user.team;
-        for(int i=0;i<size;i++){
-            if(build.getBuild(i).getTeam()==team){
+        for (int i = 0; i < size; i++) {
+            if (build.getBuild(i).getTeam() == team) {
                 tg.setColor(Color.blue);
-            }else{
+            } else {
                 tg.setColor(Color.red);
             }
-            if (build.getBuild(i).isEnable()&&GameMap.isLooked[team][build.getBuild(i).x][build.getBuild(i).y]) {
+            if (build.getBuild(i).isEnable() && GameMap.isLooked[team][build.getBuild(i).x][build.getBuild(i).y]) {
                 int x = build.getBuild(i).getX();
                 int y = build.getBuild(i).getY();
                 tg.fillRect(x * 5, y * 5, 5, 5);
@@ -225,12 +230,12 @@ public class GameGLJPanel extends GLJPanel {
         tg.setColor(Color.green);
         size = npc.getSize();
         for (int i = 0; i < size; i++) {
-            if(npc.getNpc(i).getTeam()==team){
+            if (npc.getNpc(i).getTeam() == team) {
                 tg.setColor(Color.green);
-            }else{
+            } else {
                 tg.setColor(Color.red);
             }
-            if (npc.getNpc(i).isEnable()&&isLooking[team][(int)(npc.getNpc(i).getX()+0.5f)][(int)(npc.getNpc(i).getY()+0.5f)]-GameThread.gameTime>0) {
+            if (npc.getNpc(i).isEnable() && isLooking[team][(int) (npc.getNpc(i).getX() + 0.5f)][(int) (npc.getNpc(i).getY() + 0.5f)] - GameThread.gameTime > 0) {
                 int x = (int) npc.getNpc(i).getX();
                 int y = (int) npc.getNpc(i).getY();
                 tg.fillRect(x * 5, y * 5, 5, 5);
@@ -336,7 +341,7 @@ public class GameGLJPanel extends GLJPanel {
         int team = gameManage.user.team;
         for (int i = 0; i < npc.getSize(); i++) {
             NpcObject tNpcObject = npc.getNpc(i);
-            if (tNpcObject.isEnable()&&isLooking[team][(int)(tNpcObject.getX()+0.5f)][(int)(tNpcObject.getY()+0.5f)]-GameThread.gameTime>0) {
+            if (tNpcObject.isEnable() && isLooking[team][(int) (tNpcObject.getX() + 0.5f)][(int) (tNpcObject.getY() + 0.5f)] - GameThread.gameTime > 0) {
                 if (tNpcObject.getX() >= x - range && tNpcObject.getX() < x + range && tNpcObject.getY() >= y - range && tNpcObject.getY() < y + range) {
                     int tx = Math.round(tNpcObject.getScrnPoint().x);
                     int ty = Math.round(tNpcObject.getScrnPoint().y);
@@ -380,7 +385,7 @@ public class GameGLJPanel extends GLJPanel {
         NpcObject[] tNpc = gameManage.getUser().getChooseNpc();
         if (num >= 1) {
             //获得字体大小
-           gameFont = gameFont.deriveFont(Font.PLAIN, (int) (lastHeight * 0.025f));
+            gameFont = gameFont.deriveFont(Font.PLAIN, (int) (lastHeight * 0.025f));
             g.setFont(gameFont);
             FontMetrics tfm = g.getFontMetrics(g.getFont());
             int fontW = tfm.charWidth('a');
@@ -473,7 +478,7 @@ public class GameGLJPanel extends GLJPanel {
             i++;
 
             //坐标
-             /*
+            /*
              g.drawImage(gnImage[23], w, h + cha * i, rectW, rectH, this);
              g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
              str = getString((int) npc.getX());
@@ -516,10 +521,10 @@ public class GameGLJPanel extends GLJPanel {
 
     @Override
     public void paint(Graphics g) {
-        if (gameManage.getEvent().isReplay||gameManage.getEvent().isLoad||gameManage.getEvent().isSave) {
+        if (gameManage.getEvent().isReplay || gameManage.getEvent().isLoad || gameManage.getEvent().isSave) {
             g.setColor(Color.black);
             g.fillRect(0, 0, this.getWidth(), this.getHeight());
-        drawGUI(g);
+            drawGUI(g);
             return;
         }
         super.paint(g);

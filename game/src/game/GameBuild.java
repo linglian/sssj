@@ -41,10 +41,18 @@ public class GameBuild {
         GameUser user = gameManage.getUser();
         int x = (int) user.getX();
         int y = (int) user.getY();
+        float mx = user.getMouseOfWorld().x;
+        float my = user.getMouseOfWorld().z;
         int range = user.range;
         float width;
+        boolean isFirstAttackBuild = true;
+        boolean isFirst = true;
+        boolean isFound = false;
         GameMap map = gameManage.getMap();
         int team = gameManage.user.team;
+        if (gameManage.getUser().getChooseNpcNum() == 0) {
+            isFirstAttackBuild = false;
+        }
         for (int i = 0; i < build.size(); i++) {
             Build tBuild = build.get(i);
             if (tBuild.isEnable()) {
@@ -54,12 +62,63 @@ public class GameBuild {
                         gl.glTranslatef(tBuild.getX(), tBuild.getHigh(), tBuild.getY());
                         gl.glRotatef(tBuild.getFace(), 0f, 1f, 0f);
                         width = tBuild.getWidth();
+                        switch (tBuild.getTeam()) {
+                            case 1:
+                                gl.glColor4f(1f, 1f, 0f, 0.5f);
+                                break;
+                            case 2:
+                                gl.glColor4f(0.2f, 0.5f, 0.9f, 0.5f);
+                                break;
+                            case 3:
+                                gl.glColor4f(0f, 1f, 0f, 0.5f);
+                                break;
+                            case 4:
+                                gl.glColor4f(0f, 1f, 1f, 0.5f);
+                                break;
+                            case 5:
+                                gl.glColor4f(0f, 0f, 1f, 0.5f);
+                                break;
+                            case 6:
+                                gl.glColor4f(1f, 0f, 1f, 0.5f);
+                                break;
+                            case 7:
+                                gl.glColor4f(0f, 0.8f, 0.25f, 0.5f);
+                                break;
+                            default:
+                                gl.glColor4f(0.8f, 0.8f, 0.8f, 1f);
+                                break;
+                        }
+                        if (tBuild.getState() != NpcObject.STATE_CHOOSE) {
+                            if (isFirst && tBuild.isChoseRange(mx, my)) {
+                                isFirst = false;
+                                tBuild.setState(NpcObject.STATE_CHOSE);
+                            } else {
+                                tBuild.setState(NpcObject.STATE_NOTHING);
+                            }
+                        }
+                        switch (tBuild.getState()) {
+                            case Build.STATE_CHOSE:
+                                gl.glColor4f(0.6f, 0.6f, 0.6f, 1f);
+                                break;
+                            case Build.STATE_CHOOSE:
+                                gl.glColor4f(1f, 1f, 1f, 1f);
+                                break;
+                        }
+                        if (isFirstAttackBuild && tBuild.isChoseRange(mx, my) && !tBuild.isChoosed()) {
+                            user.setChoseBuild(tBuild);
+                            gl.glColor4f(1f, 0, 0, 1f);
+                            isFirstAttackBuild = false;
+                            isFound = true;
+                        }
                         gl.glScaled(width, width, width);
                         buildModel.get(tBuild.getId()).draw(gl);
                         gl.glPopMatrix();
                     }
                 }
             }
+        }
+        if (!isFound) {
+            user.setChoseNpc(null);
         }
         gl.glDisable(GL2.GL_BLEND);
         gl.glPopAttrib();
@@ -86,11 +145,15 @@ public class GameBuild {
             int x = r.nextInt(GameMap.width);
             int y = r.nextInt(GameMap.height);
             int id = r.nextInt(size);
-            
+
             Build build;
-            switch(id){
-                case 0:build= new Flame(id, 0, x, y, GameMap.getHigh(x, y), 1f, 0f,r.nextInt(7)+1);break;
-                default:build = new Build(id,0,0,0,0,0,0,0);break;
+            switch (id) {
+                case 0:
+                    build = new Flame(id, 0, x, y, GameMap.getHigh(x, y), 1f, 0f, r.nextInt(7) + 1);
+                    break;
+                default:
+                    build = new Build(id, 0, 0, 0, 0, 0, 0, 0);
+                    break;
             }
             this.build.add(build);
         }

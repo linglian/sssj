@@ -27,11 +27,16 @@ public class Build {
     public int x;
     public int y;
     boolean isEnable;
+    boolean isChoosed = false;
     float width;
     float face;
     float high;
+    int state = 0;
+    public final static int STATE_NOTHING = 0;
+    public final static int STATE_CHOSE = 1;
+    public final static int STATE_CHOOSE = 2;
 
-    public Build(int id, int lvl, int x, int y, float high, float width, float face,int team) {
+    public Build(int id, int lvl, int x, int y, float high, float width, float face, int team) {
         this.id = id;
         this.team = team;
         this.lvl = lvl;
@@ -41,12 +46,43 @@ public class Build {
         this.x = x;
         this.y = y;
         this.isEnable = true;
-        putMapBuild(x,y,true);
+        putMapBuild(x, y, true);
     }
 
-    public static void putMapBuild(int x,int y,boolean b){
+    public boolean isChoseRange(float x, float y) {
+        if (x <= this.x + 0.45f && x >= this.x - 0.45f && y <= this.y + 0.45f && y >= this.y - 0.45f) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isRange(float x1, float y1, float x2, float y2) {
+        if (x1 <= this.x && x2 >= this.x && y1 <= this.y && y2 >= this.y) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isChoseRange(float x1, float y1, float x2, float y2) {
+        float dx = Math.abs(x2 - x1);
+        float dy = Math.abs(y2 - y1);
+        if (x1 < x2 && y1 < y2) {
+            return isRange(x1, y1, x2, y2);
+        } else if (x1 > x2 && y1 < y2) {
+            return isRange(x2, y1, x1, y2);
+        } else if (x1 > x2 && y1 > y2) {
+            return isRange(x2, y2, x1, y1);
+        } else if (x1 < x2 && y1 > y2) {
+            return isRange(x1, y2, x2, y1);
+        }
+        return false;
+    }
+
+    public static void putMapBuild(int x, int y, boolean b) {
         for (int i = 0; i < 10; i++) {
-            GameMap.map[x][y][i].isHasBuild =b;
+            GameMap.map[x][y][i].isHasBuild = b;
         }
     }
 
@@ -57,9 +93,25 @@ public class Build {
     public void setTeam(int team) {
         this.team = team;
     }
-    
+
+    public int getState() {
+        return state;
+    }
+
+    public void setState(int state) {
+        this.state = state;
+    }
+
     public boolean isEnable() {
         return isEnable;
+    }
+
+    public boolean isChoosed() {
+        return isChoosed;
+    }
+
+    public void setIsChoosed(boolean isChoosed) {
+        this.isChoosed = isChoosed;
     }
 
     public void setIsEnable(boolean isEnable) {
@@ -196,9 +248,9 @@ public class Build {
     }
 
     public void run() {
-        if(this.hp<=0){
+        if (this.hp <= 0) {
             this.isEnable = false;
-            this.putMapBuild(x, y,false);
+            this.putMapBuild(x, y, false);
         }
     }
 }

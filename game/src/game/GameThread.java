@@ -1,6 +1,7 @@
 package game;
 
 //********************************************
+import build.Build;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import npc.NpcObject;
@@ -107,15 +108,18 @@ public class GameThread implements Runnable {
 
     public void detectionChoose() {
         GameUser user = gameManage.getUser();
-        NpcObject[] tempNpc = new NpcObject[100];
-        int num = 0;
+        NpcObject[] tempNpc;
+        Build[] tempBuild;
+        int num;
         int team = gameManage.user.team;
         if (!user.isDragged() && user.isChooseDragged()) {//拖拽
+            num = 0;
             int size = user.getChooseNpcNum();
             tempNpc = user.getChooseNpc();
             for (int i = 0; i < size; i++) {
                 tempNpc[i].setState(NpcObject.STATE_NOTHING);
             }
+            tempNpc = new NpcObject[100];
             GameNpc npc = gameManage.getNpc();
             size = npc.getSize();
             for (int i = 0; i < size; i++) {
@@ -123,23 +127,56 @@ public class GameThread implements Runnable {
                 if (temp.isEnable() && temp.getTeam() == team) {
                     if (temp.isChoseRange(user.getMouseOfWorld().x, user.getMouseOfWorld().z, user.getDraggedMouseOfWorld().x, user.getDraggedMouseOfWorld().z)) {
                         temp.setState(NpcObject.STATE_CHOOSE);
-                        tempNpc[num] = temp;
+                        tempNpc[num++] = temp;
                         temp.setIsChoosed(true);
-                        num++;
                     } else {
                         temp.setIsChoosed(false);
                     }
                 }
             }
-            user.setChooseNpc(tempNpc, num);
+            if (num == 0) {
+                user.setChooseNpc(null, num);
+            } else {
+                user.setChooseNpc(tempNpc, num);
+            }
+            if (num == 0) {
+                size = user.getChooseBuildNum();
+                tempBuild = user.getChooseBuild();
+                for (int i = 0; i < size; i++) {
+                    tempBuild[i].setState(Build.STATE_NOTHING);
+                }
+                num = 0;
+                tempBuild = new Build[100];
+                GameBuild build = gameManage.getBuild();
+                size = build.getSize();
+                for (int i = 0; i < size; i++) {
+                    Build temp = build.getBuild(i);
+                    if (temp.isEnable() && temp.getTeam() == team) {
+                        if (temp.isChoseRange(user.getMouseOfWorld().x, user.getMouseOfWorld().z, user.getDraggedMouseOfWorld().x, user.getDraggedMouseOfWorld().z)) {
+                            temp.setState(NpcObject.STATE_CHOOSE);
+                            tempBuild[num++] = temp;
+                            temp.setIsChoosed(true);
+                        } else {
+                            temp.setIsChoosed(false);
+                        }
+                    }
+                }
+                if (num == 0) {
+                    user.setChooseBuild(tempBuild, num);
+                } else {
+                    user.setChooseBuild(tempBuild, num);
+                }
+            }
             user.setIsChooseDragged(false);
         } else if (user.isClicked()) {//点击
+            num = 0;
             boolean isFirst = true;
             int size = user.getChooseNpcNum();
             tempNpc = user.getChooseNpc();
             for (int i = 0; i < size; i++) {
                 tempNpc[i].setState(NpcObject.STATE_NOTHING);
             }
+            tempNpc = new NpcObject[100];
             GameNpc npc = gameManage.getNpc();
             size = npc.getSize();
             for (int i = 0; i < size; i++) {
@@ -149,16 +186,46 @@ public class GameThread implements Runnable {
                         isFirst = false;
                         temp.setState(NpcObject.STATE_CHOOSE);
                         gameManage.getPanel().setNotice(temp.getBase());
-                        tempNpc[num] = temp;
+                        tempNpc[num++] = temp;
                         temp.setIsChoosed(true);
-                        num++;
-
                     } else {
                         temp.setIsChoosed(false);
                     }
                 }
             }
-            user.setChooseNpc(tempNpc, num);
+            if (num == 0) {
+                user.setChooseNpc(null, num);
+            } else {
+                user.setChooseNpc(tempNpc, num);
+            }
+            if (num == 0) {
+                size = user.getChooseBuildNum();
+                tempBuild = user.getChooseBuild();
+                for (int i = 0; i < size; i++) {
+                    tempBuild[i].setState(Build.STATE_NOTHING);
+                }
+                tempBuild = new Build[100];
+                GameBuild build = gameManage.getBuild();
+                size = build.getSize();
+                for (int i = 0; i < size; i++) {
+                    Build temp = build.getBuild(i);
+                    if (temp.isEnable() && temp.getTeam() == team) {
+                        if (isFirst && temp.isChoseRange(user.getMouseOfWorld().x, user.getMouseOfWorld().z)) {
+                            isFirst = false;
+                            temp.setState(NpcObject.STATE_CHOOSE);
+                            tempBuild[num++] = temp;
+                            temp.setIsChoosed(true);
+                        } else {
+                            temp.setIsChoosed(false);
+                        }
+                    }
+                }
+                if (num == 0) {
+                    user.setChooseBuild(tempBuild, num);
+                } else {
+                    user.setChooseBuild(tempBuild, num);
+                }
+            }
             user.setIsClicked(false);
         }
     }
@@ -210,7 +277,7 @@ public class GameThread implements Runnable {
                                     if (k < 0 || m < 0 || m >= GameMap.width || k >= GameMap.height) {
                                         continue;
                                     }
-                                    if (mainNpc[k][m] != null && mainNpc[k][m] != tNpc&&mainNpc[k][m].getTeam()!=tNpc.getTeam()) {
+                                    if (mainNpc[k][m] != null && mainNpc[k][m] != tNpc && mainNpc[k][m].getTeam() != tNpc.getTeam()) {
                                         tNpc.setAttack(mainNpc[k][m]);
                                         flag = 1;
                                     }
