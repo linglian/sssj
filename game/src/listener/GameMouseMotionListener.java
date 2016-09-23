@@ -30,7 +30,7 @@ public class GameMouseMotionListener implements MouseMotionListener {
 
     @Override
     public void mouseDragged(MouseEvent e) {
-        if(gameManage.getUser().isCantHandle()){
+        if (gameManage.getUser().isCantHandle()) {
             return;
         }
         int size = gameManage.getGameGUI().size();
@@ -39,13 +39,13 @@ public class GameMouseMotionListener implements MouseMotionListener {
         GameGUI tempGui;
         if (gameManage.getEvent().isOtherGUI) {
             int s = gameManage.getChooseGUI().size();
-            for (int i = s-1; i >= 0; i--) {
+            for (int i = s - 1; i >= 0; i--) {
                 tempGui = gameManage.getChooseGUI().get(i);
                 tempGui.dragged(e);
                 break;
             }
         } else {
-            for (int i = size-1; i >= 0; i--) {
+            for (int i = size - 1; i >= 0; i--) {
                 tempGui = gameManage.getGameGUI().get(i);
                 if (tempGui.enable && tempGui.isViewable && tempGui.isRange(mouseX, mouseY)) {
                     tempGui.dragged(e);
@@ -54,7 +54,7 @@ public class GameMouseMotionListener implements MouseMotionListener {
                 }
             }
         }
-        if (gameManage.getEvent().isOtherGUI||GameGLEventListener.isFirst) {
+        if (gameManage.getEvent().isOtherGUI || GameGLEventListener.isFirst) {
             return;
         }
         boolean isButton1 = false;
@@ -86,7 +86,7 @@ public class GameMouseMotionListener implements MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        if(gameManage.getUser().isCantHandle()){
+        if (gameManage.getUser().isCantHandle()) {
             return;
         }
         int x = e.getX();
@@ -96,7 +96,7 @@ public class GameMouseMotionListener implements MouseMotionListener {
         int mouseX = e.getX();
         int mouseY = e.getY();
         boolean isFound = false;
-        for (int i = size-1; i >=0; i--) {
+        for (int i = size - 1; i >= 0; i--) {
             GameGUI temp = gameManage.getGameGUI().get(i);
             if (temp.enable && temp.isViewable && temp.isRange(mouseX, mouseY)) {
                 temp.move(e);
@@ -104,7 +104,7 @@ public class GameMouseMotionListener implements MouseMotionListener {
                 break;
             }
         }
-        if (isFound||GameGLEventListener.isFirst) {
+        if (isFound || GameGLEventListener.isFirst) {
             return;
         }
         if (e.getY() <= (int) (gameManage.getFrame().getHeight() * 0.675f)) {

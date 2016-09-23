@@ -22,6 +22,7 @@ import sd3.Game3DS;
 public class GameBuild {
 
     LinkedList<Build> build;
+    public static LinkedList<Build> buildExample;
     GameManage gameManage;
     public static LinkedList<Game3DS> buildModel;
     ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
@@ -29,6 +30,7 @@ public class GameBuild {
     public GameBuild(GameManage gameManage) {
         this.gameManage = gameManage;
         build = new LinkedList();
+        buildExample = new LinkedList();
     }
 
     public void drawBuild(GL2 gl) {
@@ -125,13 +127,27 @@ public class GameBuild {
         gl.glPopMatrix();
     }
 
+    public void loadBuild(){
+        for(int i=0;i<20;i++){
+            buildExample.add(new Build(i,100,300,1,1,1,0,5,2,3,4,5,100,0,0));
+        }
+    }
+    public Build getBuildExample(int id){
+        return buildExample.get(id);
+    }
     public void init(GLAutoDrawable glad) {
         gameManage.getMainBar().setText("正在读取建筑模型");
         buildModel = new LinkedList();
         Game3DS temp = new Game3DS(glad);
         temp.init("model\\3ds\\huodui.3DS", "model\\3ds");
         buildModel.add(temp);
+        for (int i = 0; i < 20; i++) {
+            temp = new Game3DS(glad);
+            temp.init("model\\3ds\\block.3DS", "model\\3ds");
+            buildModel.add(temp);
+        }
         gameManage.getMainBar().barNum++;
+        loadBuild();
         replay();
     }
 

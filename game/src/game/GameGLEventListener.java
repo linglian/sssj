@@ -14,6 +14,7 @@ import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.TextureIO;
 import granule.SkillAnimation;
 import gui.MainLoadBar;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -27,6 +28,7 @@ import sd3.Game3DS;
 import skill.skill;
 import tool.Vector2;
 import tool.Vector3;
+import toolkit.GameString;
 
 //*类名:GameGLEventListener
 //*作者:凌恋      时间:2016-8-13 17:03:21
@@ -85,6 +87,7 @@ public class GameGLEventListener implements GLEventListener {
             gameManage.setFocusGameGui(null);
             gameManage.removeGameGUI(gameManage.getMainBar());
             isFirst = false;
+            gameManage.getPanel().getStrLinkedList().add(new GameString("欢迎来到沙石世界II", gameManage.getFrame().getWidth() / 2 - (int) (gameManage.getFrame().getHeight() * 0.2f), gameManage.getFrame().getHeight() / 2 - (int) (gameManage.getFrame().getHeight() * 0.1f), 0.05f, 10, 20, Color.GRAY));
         } else if (!isFirst) {
             if (gameManage.getEvent().isReplay || gameManage.getEvent().isLoad || gameManage.getEvent().isSave) {
                 return;
@@ -106,8 +109,24 @@ public class GameGLEventListener implements GLEventListener {
             double tx = s * gameManage.getUser().getWide();
             float lightPosition[] = {(float) gameManage.getUser().getX() + (float) tx, (float) gameManage.getUser().getHigh(), (float) gameManage.getUser().getY() + (float) tz, 1f};
             gl.glLightfv(GL2.GL_LIGHT0, GL2.GL_POSITION, FloatBuffer.wrap(lightPosition));
-            glu.gluLookAt(gameManage.getUser().getX() + tx, gameManage.getUser().getHigh(), gameManage.getUser().getY() + tz, gameManage.getUser().getX(), 0f, gameManage.getUser().getY(), 0f, 1f, 0f);
-            //画地图
+            if (gameManage.getUser().isView() && gameManage.getUser().getChooseNpcNum() >= 1) {
+                float x = gameManage.getUser().getChooseNpc()[0].getX();
+                float y = gameManage.getUser().getChooseNpc()[0].getY();
+                float high = gameManage.getUser().getChooseNpc()[0].getHigh();
+                c = Math.cos(Math.toRadians(gameManage.getUser().getChooseNpc()[0].getFace() - 270f));
+                if (c < -1.5 || c > 1.5) {
+                    c = 0;
+                }
+                s = Math.sin(Math.toRadians(gameManage.getUser().getChooseNpc()[0].getFace() - 270f));
+                if (s < -1.5 || s > 1.5) {
+                    s = 0;
+                }
+                gameManage.getUser().setX(x);
+                gameManage.getUser().setY(y);
+                glu.gluLookAt(x, high + 1.1f, y + 0.2f, x + 10f * s, high + 1.1f, y + 10f * c, 0f, 1f, 0f);
+            } else {
+                glu.gluLookAt(gameManage.getUser().getX() + tx, gameManage.getUser().getHigh(), gameManage.getUser().getY() + tz, gameManage.getUser().getX(), 0f, gameManage.getUser().getY(), 0f, 1f, 0f);
+            }//画地图
             gl.glEnable(GL2.GL_LIGHTING);
             gameManage.getMap().drawMap(gl);
             //画Npc
@@ -145,7 +164,15 @@ public class GameGLEventListener implements GLEventListener {
         if (user.isBuild()) {
             gl.glPushMatrix();
             gl.glTranslatef((int) (user.getMouseOfWorld().x + 0.5f), gameManage.getMap().getHigh((int) (user.getMouseOfWorld().x + 0.5f), (int) (user.getMouseOfWorld().z + 0.5f)), (int) (user.getMouseOfWorld().z + 0.5f));
-            gameManage.getMap().mapModel.get(0).draw(gl);
+            int id = gameManage.getUser().getBuildBuildId();
+            if (id != -1) {
+                if (GameMap.isCanMoveHigh((int) (user.getMouseOfWorld().x + 0.5f), (int) (user.getMouseOfWorld().z + 0.5f))) {
+                    gl.glColor4f(0f, 1f, 0f, 0.6f);
+                } else {
+                    gl.glColor4f(1f, 0f, 0f, 0.6f);
+                }
+                gameManage.getBuild().buildModel.get(id).draw(gl);
+            }
             gl.glPopMatrix();
         }
     }

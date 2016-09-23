@@ -45,13 +45,17 @@ public class GameMap {
         int x = (int) user.getX();
         int y = (int) user.getY();
         int range = user.range;
+        boolean isView = false;
+        if (gameManage.getUser().isView() && gameManage.getUser().getChooseNpcNum() >= 1) {
+            isView = true;
+        }
         for (int i = x - range; i < x + range; i++) {
             for (int j = y - range; j < y + range; j++) {
                 if (i < 0 || j < 0 || i >= width || j >= height) {
                     continue;
                 }
                 gl.glEnable(GL2.GL_LIGHTING);
-                if (isLooked[team][i][j]) {
+                if (isView || isLooked[team][i][j]) {
                     for (int k = 0; k < 10; k++) {
                         if (map[i][j][k] != null) {
                             if (map[i][j][k].id == -1) {
@@ -93,8 +97,8 @@ public class GameMap {
                             } else {
                                 gl.glColor4f(1f, 1f, 1f, 1f);
                             }
-                            if(isLooking[team][i][j]-GameThread.gameTime<=0){
-                                gl.glColor4f(0.2f,0.2f,0.2f,0.5f);
+                            if (!isView && isLooking[team][i][j] - GameThread.gameTime <= 0) {
+                                gl.glColor4f(0.2f, 0.2f, 0.2f, 0.5f);
                             }
                             mapModel.get(map[i][j][k].id).draw(gl);
                             gl.glPopMatrix();
@@ -139,7 +143,7 @@ public class GameMap {
 
     public static boolean isCanMoveHigh(int x, int y) {
         for (int i = 0; i < 10; i++) {
-            if (GameMap.map[x][y][i].id != -1 &&( !GameMap.map[x][y][i].isCanMove || GameMap.map[x][y][i].isHasBuild)) {
+            if (GameMap.map[x][y][i].id != -1 && (!GameMap.map[x][y][i].isCanMove || GameMap.map[x][y][i].isHasBuild)) {
                 return false;
             }
         }
@@ -180,40 +184,53 @@ public class GameMap {
         }
     }
 
-    public void replay() {
+    public void lightAll(int time) {
+        for (int k = 0; k < 8; k++) {
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    isLooked[k][i][j] = true;
+                    isLooking[k][i][j] = time;
+                }
+            }
+        }
+    }
+
+    public void replay(int root) {
         gameManage.getMainBar().setText("正在初始化地图");
         int w = width;
         int h = height;
         isLooked = new boolean[8][w][h];
         isLooking = new int[8][w][h];
         this.map = new Map[w][h][10];
-        for(int k=0;k<8;k++)
-        for (int i = 0; i < w; i++) {
-            for (int j = 0; j < h; j++) {
-                if (this.isQuanliang) {
-                    isLooked[k][i][j] = true;
-                    isLooking[k][i][j] = 1;
-                } else {
-                    isLooked[k][i][j] = false;
-                    isLooking[k][i][j] =0;
+        for (int k = 0; k < 8; k++) {
+            for (int i = 0; i < w; i++) {
+                for (int j = 0; j < h; j++) {
+                    if (this.isQuanliang) {
+                        isLooked[k][i][j] = true;
+                        isLooking[k][i][j] = 1;
+                    } else {
+                        isLooked[k][i][j] = false;
+                        isLooking[k][i][j] = 0;
+                    }
                 }
             }
         }
-        Random r = new Random();
+        int num = root;
         for (int i = 0; i < w; i++) {
             gameManage.getMainBar().barNum += 1f / 25f;
             this.map[i] = new Map[h][10];
             for (int j = 0; j < h; j++) {
                 this.map[i][j] = new Map[10];
                 for (int k = 0; k < 10; k++) {
+                    num += i * root - j * root + root * k + i * 5 - j * i;
                     if (k == 0) {
-                        this.map[i][j][k] = new Map(i, j, k, 0, r.nextInt(8), 1f);
+                        this.map[i][j][k] = new Map(i, j, k, 0, Math.abs(num % 8), 1f);
                     } else if (k == 1) {
-                        int ran = r.nextInt(100);
+                        int ran = Math.abs(num % 100);
                         if (ran <= 80) {
                             this.map[i][j][k] = new Map(i, j, k, -1, 0, 1f);
                         } else {
-                            this.map[i][j][k] = new Map(i, j, k, 0, r.nextInt(8), 1f);
+                            this.map[i][j][k] = new Map(i, j, k, 0, Math.abs(num % 8), 1f);
                         }
                     } else {
                         this.map[i][j][k] = new Map(i, j, k, -1, 0, 1f);
@@ -234,7 +251,7 @@ public class GameMap {
         temp.init("model\\3ds\\huodui.3DS", "model\\3ds");
         mapModel.add(temp);
         gameManage.getMainBar().barNum++;
-        replay();
+        replay(50);
     }
 
     public int getWidth() {

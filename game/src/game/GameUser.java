@@ -1,7 +1,9 @@
 package game;
 
 //********************************************
+import function.GameFunction;
 import build.Build;
+import function.GameFunctionBuild;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import npc.NpcObject;
@@ -31,30 +33,42 @@ public class GameUser {
     int rock;
     int peopleNumber;
     int maxpeopleNumber;
-    public int range = 13;
-    public float lastX;
-    public float lastY;
+    int buildBuildId;
+    int moveState;
+    
     float x;
     float y;
     float high = 12.725f;
     float wide = 7.5f;
-    int moveState;
     float moveSpeed = 0.5f;
+    
     double rotate = 0.0;
+    
+    boolean isView = false;
     boolean isBuild = false;
     boolean isTurn = false;
     boolean isClicked = false;
     boolean isDragged = false;
     boolean isChooseDragged = false;
-    boolean flowNpc = false;
+    boolean isCtrl = false;
+    boolean flow = false;
+    
     Vector3 mouseOfWorld;
     Vector3 draggedMouseOfWorld;
+    
     private NpcObject[] chooseNpc;
     int chooseNpcNum;
     private Build[] chooseBuild;
     int chooseBuildNum;
     NpcObject choseNpc;
     Build choseBuild;
+    
+    GameFunction []gameFunction;
+    GameFunctionBuild []npcBuildFunction;
+    
+    public int range = 13;
+    public float lastX;
+    public float lastY;
     public static final int MOVE_STOP = 0;
     public static final int MOVE_UP = 1;
     public static final int MOVE_DOWN = 2;
@@ -64,8 +78,7 @@ public class GameUser {
     public static final int MOVE_UP_LEFT = 6;
     public static final int MOVE_DOWN_LEFT = 7;
     public static final int MOVE_DOWN_RIGHT = 8;
-    GameManage gameManage;
-    ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    
     public static final int TEAM_1 = 1;
     public static final int TEAM_2 = 2;
     public static final int TEAM_3 = 3;
@@ -73,6 +86,9 @@ public class GameUser {
     public static final int TEAM_5 = 5;
     public static final int TEAM_6 = 6;
     public static final int TEAM_7 = 7;
+    
+    GameManage gameManage;
+    ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
     public GameUser(int x, int y, GameManage gameManage) {
         this.gameManage = gameManage;
@@ -84,8 +100,43 @@ public class GameUser {
         this.y = y;
         Random r = new Random();
         this.team = r.nextInt(7) + 1;
+        this.npcBuildFunction = new GameFunctionBuild[20];
+        for(int i=0;i<20;i++){
+           this.npcBuildFunction[i] = new GameFunctionBuild(gameManage,i);
+        }
     }
 
+    public void setNpcBuild(){
+        for(int i=0;i<20;i++){
+            this.gameFunction = this.npcBuildFunction;
+        }
+    }
+    public GameFunction[] getGameFunction() {
+        return gameFunction;
+    }
+
+    public void setGameFunction(GameFunction[] gameFunction) {
+        this.gameFunction = gameFunction;
+    }
+
+    public boolean isView() {
+        return isView;
+    }
+
+    public void setIsView(boolean isView) {
+        this.isView = isView;
+    }
+
+    
+    public boolean isCtrl() {
+        return isCtrl;
+    }
+
+    public void setIsCtrl(boolean isCtrl) {
+        this.isCtrl = isCtrl;
+    }
+
+    
     public int getGold() {
         return gold;
     }
@@ -240,27 +291,36 @@ public class GameUser {
     }
 
     public boolean isCantHandle() {
-        if (flowNpc) {
+        if (flow) {
             return true;
         } else {
             return false;
         }
     }
 
-    public boolean isFlowNpc() {
-        return flowNpc;
+    public boolean isFlow() {
+        return flow;
     }
 
-    public void setFlowNpc(boolean flowNpc) {
-        this.flowNpc = flowNpc;
+    public void setFlow(boolean flow) {
+        this.flow = flow;
+    }
+
+    public int getBuildBuildId() {
+        return buildBuildId;
+    }
+
+    public void setBuildBuildId(int buildBuildId) {
+        this.buildBuildId = buildBuildId;
     }
 
     public boolean isBuild() {
         return isBuild;
     }
 
-    public void setIsBuild(boolean isBuild) {
+    public void setIsBuild(boolean isBuild,int build) {
         this.isBuild = isBuild;
+        this.buildBuildId = build;
     }
 
     public double getRotate() {

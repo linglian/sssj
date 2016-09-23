@@ -41,11 +41,25 @@ public class GameThread implements Runnable {
         }
     }
 
+    public int getTime() {
+        return time;
+    }
+
+    public void setTime(int time) {
+        this.time = time;
+    }
+
     public void viewMove() {
         GameUser user = gameManage.getUser();
-        if (user.isFlowNpc() && user.getChooseNpcNum() >= 1) {
-            user.setX(user.getChooseNpc()[0].getX());
-            user.setY(user.getChooseNpc()[0].getY());
+        if (user.isFlow()) {
+            if (user.getChooseNpcNum() >= 1) {
+                user.setX(user.getChooseNpc()[0].getX());
+                user.setY(user.getChooseNpc()[0].getY());
+            } else if (user.getChooseBuildNum() >= 1) {
+                user.setX(user.getChooseBuild()[0].getX());
+                user.setY(user.getChooseBuild()[0].getY());
+            }
+
         } else {
             int state = user.getMoveState();
             float speed = user.getMoveSpeed();
@@ -138,6 +152,7 @@ public class GameThread implements Runnable {
                 user.setChooseNpc(null, num);
             } else {
                 user.setChooseNpc(tempNpc, num);
+                gameManage.getUser().setNpcBuild();
             }
             if (num == 0) {
                 size = user.getChooseBuildNum();
@@ -197,6 +212,7 @@ public class GameThread implements Runnable {
                 user.setChooseNpc(null, num);
             } else {
                 user.setChooseNpc(tempNpc, num);
+                gameManage.getUser().setNpcBuild();
             }
             if (num == 0) {
                 size = user.getChooseBuildNum();
@@ -248,6 +264,11 @@ public class GameThread implements Runnable {
                 }
                 if (time >= 20) {
                     time = 0;
+                    GameUser user = gameManage.getUser();
+                    user.setGold(user.getGold()+1);
+                    user.setRock(user.getRock()+1);
+                    user.setWater(user.getWater()+1);
+                    user.setWood(user.getWood()+1);
                 }
                 viewMove();
                 detectionChoose();

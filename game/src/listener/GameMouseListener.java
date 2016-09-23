@@ -1,5 +1,7 @@
 package listener;
 
+import build.Build;
+import build.Flame;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import game.GameGLEventListener;
@@ -36,13 +38,65 @@ public class GameMouseListener implements MouseListener {
     GLU glu;
     GL2 gl;
     GameManage gameManage;
+    Thread thread;
 
     public GameMouseListener(GameManage gameManage) {
         this.gameManage = gameManage;
     }
 
+    public boolean mouseChose(MouseEvent e) {
+        if (gameManage.getUser().getGameFunction() == null) {
+            return false;
+        }
+        int x = e.getX();
+        int y = e.getY();
+        int width = gameManage.getFrame().getWidth();
+        int height = gameManage.getFrame().getHeight();
+        float w = (float) x / (float) width;
+        float h = (float) y / (float) height;
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (w >= 0.7f + j * 0.04f && w <= 0.74f + j * 0.04f && h >= 0.73f + 0.05f * i && h <= 0.78f + 0.05f * i) {
+                    gameManage.getUser().getGameFunction()[i * 5 + j].function();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
+        GameUser user = gameManage.getUser();
+        if (user.isCtrl()) {
+            System.out.println("x=" + (float) ((float) e.getX() / (float) gameManage.getFrame().getWidth()) + "," + "y=" + (float) ((float) e.getY() / (float) gameManage.getFrame().getHeight()));
+        }
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (!GameGLEventListener.isFirst) {
+            if ((gameManage.getUser().getChooseNpcNum() >= 1 || gameManage.getUser().getChooseBuildNum() >= 1) && e.getX() > (int) (gameManage.getFrame().getWidth() * 0.345f) && e.getY() > (int) (gameManage.getFrame().getHeight() * 0.77f) && e.getX() < (int) (gameManage.getFrame().getWidth() * 0.495f) && e.getY() < (int) (gameManage.getFrame().getHeight() * 0.96f)) {
+                gameManage.getUser().setFlow(true);
+            }
+        }
+    }
+
+    public void tMouseReleaed(MouseEvent e) {
+        gameManage.getEvent().isOtherGUI = false;
+        gameManage.clearGameGUI();
+        if (!GameGLEventListener.isFirst) {
+            if (gameManage.getUser().isFlow()) {
+                gameManage.getUser().setFlow(false);
+                return;
+            }
+            if (gameManage.getUser().isDragged()) {
+                gameManage.getUser().setReleasedMouseX(e.getX());
+                gameManage.getUser().setReleasedMouseY(e.getY());
+                gameManage.getUser().setIsChooseDragged(true);
+                return;
+            }
+        }
         if (gameManage.getUser().isCantHandle()) {
             return;
         }
@@ -75,10 +129,26 @@ public class GameMouseListener implements MouseListener {
                     int y = (int) (user.getMouseOfWorld().z + 0.5f);
                     int z = gameManage.getMap().getHigher(x, y);
                     //   System.out.println("放置" + x + "," + y + "," + z);
-                    gameManage.getMap().setMap(x, y, z, new Map(x, y, z, r.nextInt(2), r.nextInt(8)+1, 1f));
+                    if (GameMap.isCanMoveHigh(x, y)) {
+                        Build b = gameManage.getBuild().getBuildExample(gameManage.getUser().getBuildBuildId());
+                        int gold = user.getGold();
+                        int water = user.getWater();
+                        int rock = user.getRock();
+                        int wood = user.getWood();
+                        if (gold >= b.getGold() && water >= b.getWater() && rock >= b.getRock() && wood >= b.getWood()) {
+                            user.setGold(gold - b.getGold());
+                            user.setWater(water - b.getWater());
+                            user.setRock(rock - b.getRock());
+                            user.setWood(wood - b.getWood());
+                            gameManage.getBuild().addBuild(new Flame(gameManage.getUser().getBuildBuildId(), 1, x, y, z, 1f, 0, gameManage.getUser().getTeam()));
+                        }
+                    }
                 }
                 user.setIsClicked(true);//点击生效，交给其他类进一步处理
             } else {//右键攻击或者移动
+                thread = new Thread() {
+                    public void run() {
+                        gameManage.getUser().setIsBuild(false, -1);
                         int num = user.getChooseNpcNum();
                         NpcObject[] tempNpc = user.getChooseNpc();
                         NpcObject attackNpc = null;
@@ -91,9 +161,15 @@ public class GameMouseListener implements MouseListener {
                         for (int i = 0; i < num; i++) {
                             if (tempNpc[i].isEnable()) {
                                 if (attackNpc == null) {
+                                    if (thread != this) {
+                                        return;
+                                    }
                                     Point ps = new Point(tempNpc[i].getX(), tempNpc[i].getY());
                                     Point pd = new Point(mx, my);
-                                    LinkedList temp = Point.printPath(ps, pd, tempNpc[i].getHigh(), 200);
+                                    LinkedList temp = Point.printPath(ps, pd, tempNpc[i].getHigh(), 50);
+                                    if (thread != this) {
+                                        return;
+                                    }
                                     if (temp == null) {
                                         tempNpc[i].setMove(mx, my);
                                         tempNpc[i].setPath(null);
@@ -102,13 +178,14 @@ public class GameMouseListener implements MouseListener {
                                         tempNpc[i].setPath(temp);
                                     }
                                     tempNpc[i].setAttack(null);
-                                } else {
-                                    if (!attackNpc.isChoosed()) {
-                                        tempNpc[i].setAttack(attackNpc);
-                                    }
+                                } else if (!attackNpc.isChoosed()) {
+                                    tempNpc[i].setAttack(attackNpc);
                                 }
                             }
                         }
+                    }
+                };
+                thread.start();
                 //System.out.println("移动" + gameManage.getUser().getMouseOfWorld().x + "," + gameManage.getUser().getMouseOfWorld().z);
             }
         } else if (e.getY() > (int) (gameManage.getFrame().getHeight() * 0.675f) && e.getX() < (int) (gameManage.getFrame().getWidth() * 0.335f)) {//小地图
@@ -122,49 +199,31 @@ public class GameMouseListener implements MouseListener {
                 user.setX(mapX / xUnit);
                 user.setY(mapY / yUnit);
             } else {//在小地图上移动小人
-                        int num = gameManage.getUser().getChooseNpcNum();
-                        NpcObject[] tempNpc = gameManage.getUser().getChooseNpc();
-                        for (int i = 0; i < num; i++) {
-                            if (tempNpc[i].isEnable()) {
-                                Point ps = new Point(tempNpc[i].getX(), tempNpc[i].getY());
-                                Point pd = new Point(mapX / xUnit, mapY / yUnit);
-                                LinkedList temp = Point.printPath(ps, pd, tempNpc[i].getHigh(), 200);
-                                if (temp == null) {
-                                    tempNpc[i].setMove(mapX / xUnit, mapY / yUnit);
-                                    tempNpc[i].setPath(null);
-                                } else {
-                                    //Point.sPath(temp);
-                                    tempNpc[i].setPath(temp);
-                                }
-                            }
+                int num = gameManage.getUser().getChooseNpcNum();
+                NpcObject[] tempNpc = gameManage.getUser().getChooseNpc();
+                for (int i = 0; i < num; i++) {
+                    if (tempNpc[i].isEnable()) {
+                        Point ps = new Point(tempNpc[i].getX(), tempNpc[i].getY());
+                        Point pd = new Point(mapX / xUnit, mapY / yUnit);
+                        LinkedList temp = Point.printPath(ps, pd, tempNpc[i].getHigh(), 200);
+                        if (temp == null) {
+                            tempNpc[i].setMove(mapX / xUnit, mapY / yUnit);
+                            tempNpc[i].setPath(null);
+                        } else {
+                            //Point.sPath(temp);
+                            tempNpc[i].setPath(temp);
                         }
+                    }
+                }
             }
-        }
-    }
-
-    @Override
-    public void mousePressed(MouseEvent e) {
-        if (!GameGLEventListener.isFirst) {
-            if (gameManage.getUser().getChooseNpcNum() >= 1 && e.getX() > (int) (gameManage.getFrame().getWidth() * 0.345f) && e.getY() > (int) (gameManage.getFrame().getHeight() * 0.77f) && e.getX() < (int) (gameManage.getFrame().getWidth() * 0.495f) && e.getY() < (int) (gameManage.getFrame().getHeight() * 0.96f)) {
-                gameManage.getUser().setFlowNpc(true);
-            }
+        } else if (gameManage.getUser().getChooseBuildNum() >= 1 || gameManage.getUser().getChooseNpcNum() >= 1) {
+            mouseChose(e);
         }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
-        gameManage.getEvent().isOtherGUI = false;
-        gameManage.clearGameGUI();
-        if (!GameGLEventListener.isFirst) {
-            if (gameManage.getUser().isFlowNpc()) {
-                gameManage.getUser().setFlowNpc(false);
-            }
-            if (gameManage.getUser().isDragged()) {
-                gameManage.getUser().setReleasedMouseX(e.getX());
-                gameManage.getUser().setReleasedMouseY(e.getY());
-                gameManage.getUser().setIsChooseDragged(true);
-            }
-        }
+        tMouseReleaed(e);
     }
 
     @Override

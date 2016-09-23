@@ -23,7 +23,9 @@ public class Flame extends Build {
         super(id, lvl, x, y, high, width, face, team);
     }
 
+    @Override
     public void run() {
+        super.run();
         for (int i = x - view; i <= x + view; i++) {
             for (int j = y - view; j <= y + view; j++) {
                 if (i < 0 || j < 0 || i >= GameMap.width || j >= GameMap.height) {

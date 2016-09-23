@@ -1,6 +1,7 @@
 package game;
 
 //********************************************
+import build.Build;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -53,7 +54,7 @@ public class GameGLJPanel extends GLJPanel {
     LinkedList<GameString> strLinkedList;
     Image[] uiImage;
     Color[] color;
-    int uiNumber = 8;
+    int uiNumber = 13;
     public static Font gameFont;
     public static Image[] gnImage;
     public static int gnImageNumber = 42;
@@ -200,10 +201,22 @@ public class GameGLJPanel extends GLJPanel {
         //画人物栏
         g.drawImage(uiImage[5], (int) (this.getWidth() * 0.525f), (int) (this.getHeight() * 0.73f), (int) (this.getWidth() * 0.43f), (int) (this.getHeight() * 0.22f), null);
         g.drawImage(uiImage[3], (int) (this.getWidth() * 0.332f), (int) (this.getHeight() * 0.675f), (int) (this.getWidth() * 0.65f), (int) (this.getHeight() * 0.3025f), null);
-
+        //画功能框
+        g.drawImage(uiImage[8], (int) (this.getWidth() * 0.7f), (int) (this.getHeight() * 0.73f), (int) (this.getWidth() * 0.255f), (int) (this.getHeight() * 0.218), null);
         if (gameManage.getUser().chooseNpcNum <= 0) {
             g.drawImage(uiImage[7], (int) (this.getWidth() * 0.345f), (int) (this.getHeight() * 0.77f), (int) (this.getWidth() * 0.15f), (int) (this.getHeight() * 0.19f), null);
+        } else if (gameManage.getUser().chooseNpcNum >= 1) {
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 5; j++) {
+                    g.setColor(Color.red);
+                    g.fillRect((int) ((0.702f + j * 0.05f) * this.getWidth()), (int) ((0.73f + 0.055f * i) * this.getHeight()), (int) (0.049f * this.getWidth()), (int) (0.053f * this.getHeight()));
+                }
+            }
         }
+        for (int i = 0; i < 4; i++) {
+            g.drawImage(uiImage[i + 9], (int) (this.getWidth() * (0.65f + 0.085f * i)), (int) (this.getHeight() * 0.03f), (int) (this.getWidth() * 0.03f), (int) (this.getHeight() * 0.03f), null);
+        }
+
     }
 
     public void drawMap(Graphics g) {
@@ -495,6 +508,114 @@ public class GameGLJPanel extends GLJPanel {
         g.setFont(lastFont);
     }
 
+    public void drawBuildBase(Graphics g) {
+        int num = gameManage.getUser().getChooseBuildNum();
+        if (num != 0) {
+            Build[] tBuild = gameManage.getUser().getChooseBuild();
+            Font lastFont = g.getFont();
+            g.setFont(lastFont);
+            gameFont = gameFont.deriveFont(Font.PLAIN, (int) (lastHeight * 0.025f));
+            g.setFont(gameFont);
+            FontMetrics tfm = g.getFontMetrics(g.getFont());
+            int fontW = tfm.charWidth('a');
+            int fontH = tfm.getHeight();
+            //获得npc基础属性
+            Build build = tBuild[0];
+            int hp = (int) build.getHp();
+            int maxHp = (int) build.getMaxHp();
+            int mp = (int) build.getMp();
+            int maxMp = (int) build.getMaxMp();
+            int gj = (int) build.getGj();
+            int fy = (int) build.getFy();
+            int w = (int) (this.getWidth() * 0.365f);
+            int h = (int) (this.getHeight() * 0.975f);
+            //画Hp
+            float temp = (float) (build.getHp() / build.getMaxHp());
+            if (temp < 0) {
+                temp = 0;
+            } else if (temp > 1) {
+                temp = 1;
+            }
+            g.setColor(new Color(1 - temp, temp, 0));
+            String str = getString(hp);
+            int lenth = str.length();//计算hp的值
+            g.drawString(str, w, h);
+            g.setColor(Color.LIGHT_GRAY);
+            str = getString(maxHp);
+            g.drawString("/" + str, w + lenth * fontW, h);
+            lenth += str.length() + 1;//计算最大hp
+            //画Mp
+            temp = (float) (build.getMp() / build.getMaxMp());
+            if (temp < 0) {
+                temp = 0;
+            } else if (temp > 1) {
+                temp = 1;
+            }
+            g.setColor(new Color(1 - temp, 0, temp));
+            str = getString(mp);
+            lenth += 2;
+            g.drawString(str, w + lenth * fontW, h);
+            lenth += str.length();//计算Mp
+            g.setColor(Color.LIGHT_GRAY);
+            str = getString(maxMp);
+            g.drawString("/" + str, w + lenth * fontW, h);
+            w = (int) (this.getWidth() * 0.535f);
+            h = (int) (this.getHeight() * 0.75f);
+            int rectW = (int) (this.getWidth() * 0.025f);
+            int rectH = (int) (this.getHeight() * 0.025f);
+            int cha = fontH / 3 + rectH;
+            int i = 0;
+            //画攻击力
+            if (gj != 0) {
+                g.drawImage(gnImage[29], w, h + cha * i, rectW, rectH, null);
+                g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
+                str = getString(gj);
+                g.drawString(str, w + rectW + fontW / 3, h + cha * i + fontH / 2);
+            }
+            i++;
+            //画防御力
+            if (fy != 0) {
+                g.drawImage(gnImage[4], w, h + cha * i, rectW, rectH, this);
+                g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
+                str = getString(fy);
+                g.drawString(str, w + rectW + fontW / 3, h + cha * i + fontH / 2);
+            }
+            i++;
+            //画回复生命值
+            g.drawImage(gnImage[3], w, h + cha * i, rectW, rectH, this);
+            g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
+            str = getString(build.getAddHp() * gameManage.getUser().getGameSpeed());
+            g.drawString(str, w + rectW + fontW / 3, h + cha * i + fontH / 2);
+            i++;
+            //画回复法力
+            g.drawImage(gnImage[27], w, h + cha * i, rectW, rectH, this);
+            g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
+            str = getString(build.getAddMp() * gameManage.getUser().getGameSpeed());
+            g.drawString(str, w + rectW + fontW / 3, h + cha * i + fontH / 2);
+            i++;
+            //画移动速度
+            if (build.getSpeed() != 0) {
+                g.drawImage(gnImage[1], w, h + cha * i, rectW, rectH, this);
+                g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
+                str = getString((int) (build.getSpeed() * 100 * gameManage.getUser().getGameSpeed()));
+                g.drawString(str, w + rectW + fontW / 3, h + cha * i + fontH / 2);
+            }
+            i++;
+            //画攻击速度
+            if (gj != 0) {
+                g.drawImage(gnImage[16], w, h + cha * i, rectW, rectH, this);
+                g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
+                double speed = build.getSpeedFight() * gameManage.getUser().getGameSpeed();
+                double maxSpeed = Npc.maxSpeedFight;
+                double tempS = speed / maxSpeed;
+                tempS = (int) (tempS * 100);
+                str = String.valueOf((float) tempS / 100);
+                g.drawString(str, w + rectW + fontW / 3, h + cha * i + fontH / 2);
+            }
+            i++;
+        }
+    }
+
     public String getString(double temp) {
         String str;
         String t = "";
@@ -519,6 +640,22 @@ public class GameGLJPanel extends GLJPanel {
         return str;
     }
 
+    public void drawResource(Graphics g) {
+        Font lastFont = g.getFont();
+        gameFont = gameFont.deriveFont(Font.PLAIN, (int) (lastHeight * 0.03f));
+        g.setFont(gameFont);
+        g.setColor(Color.WHITE);
+        //FontMetrics tfm = g.getFontMetrics(g.getFont());
+        //int fontW = tfm.charWidth('a');
+        //int fontH = tfm.getHeight();
+        GameUser user = gameManage.getUser();
+        g.drawString(getString(user.getGold()), (int) (this.getWidth() * (0.69f + 0.085f * 0)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getRock()), (int) (this.getWidth() * (0.69f + 0.085f * 1)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getWater()),(int) (this.getWidth() * (0.69f + 0.085f * 2)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getWood()), (int) (this.getWidth() * (0.69f + 0.085f * 3)), (int) (this.getHeight() * 0.05f));
+        g.setFont(lastFont);
+    }
+
     @Override
     public void paint(Graphics g) {
         if (gameManage.getEvent().isReplay || gameManage.getEvent().isLoad || gameManage.getEvent().isSave) {
@@ -530,10 +667,12 @@ public class GameGLJPanel extends GLJPanel {
         super.paint(g);
         if (!GameGLEventListener.isFirst) {
             drawUI(g);
+            drawResource(g);
             drawMap(g);
             drawString(g);
             drawNpcState(g);
             drawNpcBase(g);
+            drawBuildBase(g);
         }
         drawGUI(g);
         if (gameManage.getUser().isDragged()) {

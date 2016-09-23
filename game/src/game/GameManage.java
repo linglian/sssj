@@ -104,7 +104,7 @@ public class GameManage {
         } catch (InterruptedException ex) {
             System.out.println(ex.getMessage());
         }
-        map.replay();
+        map.replay(50);
         npc.replay();
         Random r = new Random();
         user.replay(r.nextInt(map.getWidth()), r.nextInt(map.getHeight()));

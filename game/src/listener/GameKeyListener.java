@@ -1,10 +1,12 @@
 package listener;
 
+import build.Flame;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import game.GameGLEventListener;
 import game.GameJFrame;
 import game.GameManage;
+import game.GameThread;
 import gui.GameGUI;
 import java.awt.Color;
 import java.awt.Toolkit;
@@ -69,6 +71,13 @@ public class GameKeyListener implements KeyListener {
                     gameManage.getMainMenu().setViewable(true);
                 }
                 break;
+            case KeyEvent.VK_C:
+                if(gameManage.getUser().isCtrl()){
+                    gameManage.getUser().setIsCtrl(false);
+                }else{
+                    gameManage.getUser().setIsCtrl(true);
+                }
+                break;
             case KeyEvent.VK_F1:
                 frame.setBounds(0, 0, 500, 500);
                 break;
@@ -88,6 +97,15 @@ public class GameKeyListener implements KeyListener {
                 //x上剪去大小/2.5
                 //y上剪去大小/5
                 gameManage.getPanel().getStrLinkedList().add(new GameString("欢迎来到沙石世界II", x, y, 0.05f, 10, 20, Color.GRAY));
+                break;
+            case KeyEvent.VK_F10:
+                gameManage.getMap().lightAll(GameThread.gameTime+10);
+                break;
+            case KeyEvent.VK_F11:
+                gameManage.getUser().setIsView(false);
+                break;
+            case KeyEvent.VK_F12:
+                gameManage.getUser().setIsView(true);
                 break;
             case KeyEvent.VK_LEFT:
                 gameManage.getUser().setX(gameManage.getUser().getX() - 0.1f);
@@ -138,10 +156,10 @@ public class GameKeyListener implements KeyListener {
                 }
                 break;
             case KeyEvent.VK_V:
-                gameManage.getUser().setIsBuild(true);
+                gameManage.getUser().setIsBuild(true,0);
                 break;
             case KeyEvent.VK_B:
-                gameManage.getUser().setIsBuild(false);
+                gameManage.getUser().setIsBuild(false,-1);
                 break;
             case KeyEvent.VK_SPACE:
                 num = gameManage.getUser().getChooseNpcNum();

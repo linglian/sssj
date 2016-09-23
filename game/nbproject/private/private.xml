@@ -3,27 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/D:/李俊萍/sssj/game/src/granule/Granule.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/listener/GameMouseListener.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameThread.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/skill/GreenHP.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameGLEventListener.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameEvent.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameMap.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameObject.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameJFrame.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/build/Flame.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/skill/skill.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameGLJPanel.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/npc/Npc.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/map/Map.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/build/Build.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameBuild.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameUser.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/npc/NpcObject.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/granule/SkillAnimation.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameManage.java</file>
-            <file>file:/D:/李俊萍/sssj/game/src/game/GameNpc.java</file>
+            <file>file:/E:/李俊萍/sssj/game/src/game/GameThread.java</file>
+            <file>file:/E:/李俊萍/sssj/game/src/game/GameGLJPanel.java</file>
+            <file>file:/E:/李俊萍/sssj/game/src/game/GameBuild.java</file>
+            <file>file:/E:/李俊萍/sssj/game/src/listener/GameMouseWheelListener.java</file>
+            <file>file:/E:/李俊萍/sssj/game/src/listener/GameMouseListener.java</file>
+            <file>file:/E:/李俊萍/sssj/game/src/listener/GameMouseMotionListener.java</file>
         </group>
     </open-files>
 </project-private>

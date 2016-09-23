@@ -17,11 +17,19 @@ public class Build {
     int id;
     int lvl;
     int maxLvl;
-    int hp;
-    int maxHp;
+    float hp;
+    float mp;
+    float maxMp;
+    float maxHp;
+    float addHp;
+    float addMp;
     int fy;
     int gj;
     int pay;
+    int gold;
+    int wood;
+    int water;
+    int rock;
     int repairPay;
     int buildTime;
     public int x;
@@ -31,6 +39,8 @@ public class Build {
     float width;
     float face;
     float high;
+    float speed;
+    double speedFight;
     int state = 0;
     public final static int STATE_NOTHING = 0;
     public final static int STATE_CHOSE = 1;
@@ -45,8 +55,136 @@ public class Build {
         this.width = width;
         this.x = x;
         this.y = y;
+        this.hp = 100f;
+        this.mp = 100f;
+        this.maxMp = 100f;
+        this.maxHp = 100f;
+        this.speedFight = 0f;
+        this.addHp = 0.05f;
+        this.addMp = 0.05f;
         this.isEnable = true;
         putMapBuild(x, y, true);
+    }
+
+    public Build(int id, float maxMp, float maxHp, float addHp, float addMp, int fy, int gj, int pay, int gold, int wood, int water, int rock, int buildTime, float speed, double speedFight) {
+        this.id = id;
+        this.team = -1;
+        this.lvl = 0;
+        this.maxLvl = 10;
+        this.maxMp = maxMp;
+        this.mp = maxMp;
+        this.maxHp = maxHp;
+        this.hp = maxHp;
+        this.addHp = addHp;
+        this.addMp = addMp;
+        this.fy = fy;
+        this.gj = gj;
+        this.pay = pay;
+        this.gold = gold;
+        this.wood = wood;
+        this.water = water;
+        this.rock = rock;
+        this.buildTime = buildTime;
+        this.speed = speed;
+        this.speedFight = speedFight;
+    }
+
+    public int getGold() {
+        return gold;
+    }
+
+    public void setGold(int gold) {
+        this.gold = gold;
+    }
+
+    public int getWood() {
+        return wood;
+    }
+
+    public void setWood(int wood) {
+        this.wood = wood;
+    }
+
+    public int getWater() {
+        return water;
+    }
+
+    public void setWater(int water) {
+        this.water = water;
+    }
+
+    public int getRock() {
+        return rock;
+    }
+
+    public void setRock(int rock) {
+        this.rock = rock;
+    }
+
+    
+    public double getSpeedFight() {
+        return speedFight;
+    }
+
+    public void setSpeedFight(double speedFight) {
+        this.speedFight = speedFight;
+    }
+
+    public float getMaxHp() {
+        return maxHp;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    
+    public void setMaxHp(float maxHp) {
+        this.maxHp = maxHp;
+    }
+
+    public float getHp() {
+        return hp;
+    }
+
+    public void setHp(float hp) {
+        this.hp = hp;
+    }
+
+    public float getAddHp() {
+        return addHp;
+    }
+
+    public void setAddHp(float addHp) {
+        this.addHp = addHp;
+    }
+
+    public float getAddMp() {
+        return addMp;
+    }
+
+    public void setAddMp(float addMp) {
+        this.addMp = addMp;
+    }
+
+    public float getMp() {
+        return mp;
+    }
+
+    public void setMp(float mp) {
+        this.mp = mp;
+    }
+
+    public float getMaxMp() {
+        return maxMp;
+    }
+
+    public void setMaxMp(float maxMp) {
+        this.maxMp = maxMp;
     }
 
     public boolean isChoseRange(float x, float y) {
@@ -142,14 +280,6 @@ public class Build {
         this.maxLvl = maxLvl;
     }
 
-    public int getMaxHp() {
-        return maxHp;
-    }
-
-    public void setMaxHp(int maxHp) {
-        this.maxHp = maxHp;
-    }
-
     public float getWidth() {
         return width;
     }
@@ -175,14 +305,6 @@ public class Build {
 
     public void setLvl(int lvl) {
         this.lvl = lvl;
-    }
-
-    public int getHp() {
-        return hp;
-    }
-
-    public void setHp(int hp) {
-        this.hp = hp;
     }
 
     public int getFy() {
@@ -248,9 +370,17 @@ public class Build {
     }
 
     public void run() {
+        this.hp += addHp;
+        if (this.hp > maxHp) {
+            this.hp = maxHp;
+        }
+        this.mp += addMp;
+        if (this.mp > maxMp) {
+            this.mp = maxMp;
+        }
         if (this.hp <= 0) {
             this.isEnable = false;
-            this.putMapBuild(x, y, false);
+            Build.putMapBuild(x, y, false);
         }
     }
 }
