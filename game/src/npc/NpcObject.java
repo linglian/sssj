@@ -46,8 +46,12 @@ public class NpcObject extends Npc {
     public final static int STATE_CHOSE = 1;
     public final static int STATE_CHOOSE = 2;
 
-    public NpcObject(int id, float x, float y, float high, float width,int team) {
-        super(id, x, y, high, width,team);
+    public NpcObject() {
+
+    }
+
+    public NpcObject(int id, float x, float y, float high, float width, int team) {
+        super(id, x, y, high, width, team);
         maxRun = 0.3f;
         this.animate = game.GameNpc.getAnimate(id);
         for (int i = 0; i < animate.length; i++) {
@@ -166,8 +170,8 @@ public class NpcObject extends Npc {
             runTime = 0;
         }
         this.fightSpeedTime += this.speedFight;
-        if (this.fightSpeedTime >= Npc.maxSpeedFight) {
-            this.fightSpeedTime = Npc.maxSpeedFight;
+        if (this.fightSpeedTime >= Npc.MAX_SPEED_FIGHT) {
+            this.fightSpeedTime = Npc.MAX_SPEED_FIGHT;
         }
         float h = GameMap.getHigh((int) (x + 0.5f), (int) (y + 0.5f));
         if (h > high + 1.3f) {
@@ -221,7 +225,7 @@ public class NpcObject extends Npc {
             float r = rx * rx + ry * ry;
             if (r <= this.attackRange * this.attackRange) {
                 this.changeStateId("attack");
-                if (this.fightSpeedTime >= Npc.maxSpeedFight) {
+                if (this.fightSpeedTime >= Npc.MAX_SPEED_FIGHT) {
                     this.fightSpeedTime = 0;
                     skill temp = new skill(this.x, this.y, this.high, this, attackNpc, (float) this.speedFight, this.gj * (1f - (npc.fy / (npc.fy + 100))));
                     temp.start();
@@ -246,7 +250,7 @@ public class NpcObject extends Npc {
         if (this.attackNpc == null) {
             return;
         }
-        if(this.attackNpc==this){
+        if (this.attackNpc == this) {
             this.attackNpc = null;
             return;
         }
@@ -259,7 +263,7 @@ public class NpcObject extends Npc {
         float ry = this.y - npc.y;
         float r = rx * rx + ry * ry;
         if (r <= this.attackRange) {
-            if (this.fightSpeedTime >= Npc.maxSpeedFight) {
+            if (this.fightSpeedTime >= Npc.MAX_SPEED_FIGHT) {
                 this.fightSpeedTime = 0;
                 skill temp = new skill(this.x, this.y, this.high, this, attackNpc, (float) this.speedFight, this.gj * (1f - (npc.fy / (npc.fy + 100))));
                 temp.start();
@@ -571,7 +575,7 @@ public class NpcObject extends Npc {
 
     @Override
     public String toString() {
-        return id + "," + x + "," + y + "," + high + "," + width + "," + maxHp + "," + maxMp + "," + gj + "," + fy + "," +team+","+ addHp;
+        return id + "," + x + "," + y + "," + high + "," + width + "," + maxHp + "," + maxMp + "," + gj + "," + fy + "," + team + "," + addHp;
     }
 
     public float getRunTime() {

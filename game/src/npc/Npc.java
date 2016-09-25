@@ -23,36 +23,39 @@ public class Npc extends GameObject {
 
     int lvl;
     int id;
-    float x;
-    float y;
-    float high;
-    float lastX;
-    float lastY;
-    float lastHigh;
-    int view;
-    int team;
+    public float x;
+    public float y;
+    public float high;
+    public float lastX;
+    public float lastY;
+    public float lastHigh;
+    public int view;
+    public int team;
     public Vector3 v;
-    double hp;
-    double maxHp;
-    double mp;
-    double maxMp;
-    double fy;
-    double gj;
-    float width;
-    double pay;
-    double lastAddHp;
-    double addHp;
-    double lastAddMp;
-    double addMp;
-    float attackRange;
-    float face;
-    double speed;
-    double speedFight;
-    double fightSpeedTime;
-    boolean isAlive = true;
-    boolean isEnable = true;
-    public static final double maxSpeedFight = 2f;
+    public double hp;
+    public double maxHp;
+    public double mp;
+    public double maxMp;
+    public double fy;
+    public double gj;
+    public float width;
+    public double pay;
+    public double lastAddHp;
+    public double addHp;
+    public double lastAddMp;
+    public double addMp;
+    public float attackRange;
+    public float face;
+    public double speed;
+    public double speedFight;
+    public double fightSpeedTime;
+    public boolean isAlive = true;
+    public boolean isEnable = true;
+    public static final double MAX_SPEED_FIGHT = 2f;
 
+    public Npc(){
+
+    }
     public Npc(int id, double maxHp, double maxMp, double gj, double fy, double addHp, double addMp, double pay, float attackRange, double speed, double speedFight, int view) {
         super(1f, 1f, 1f, 0, 0, 0);
         this.id = id;

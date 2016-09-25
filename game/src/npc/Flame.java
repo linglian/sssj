@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package build;
+package npc;
 
+import npc.Build;
 import game.GameManage;
 import game.GameMap;
 import game.GameThread;
@@ -26,8 +27,8 @@ public class Flame extends Build {
     @Override
     public void run() {
         super.run();
-        for (int i = x - view; i <= x + view; i++) {
-            for (int j = y - view; j <= y + view; j++) {
+        for (int i = (int)x - view; i <= (int)x + view; i++) {
+            for (int j = (int)y - view; j <= (int)y + view; j++) {
                 if (i < 0 || j < 0 || i >= GameMap.width || j >= GameMap.height) {
                     continue;
                 }

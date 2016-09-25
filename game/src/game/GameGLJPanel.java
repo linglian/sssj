@@ -1,7 +1,7 @@
 package game;
 
 //********************************************
-import build.Build;
+import npc.Build;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLCapabilities;
@@ -54,7 +54,7 @@ public class GameGLJPanel extends GLJPanel {
     LinkedList<GameString> strLinkedList;
     Image[] uiImage;
     Color[] color;
-    int uiNumber = 13;
+    int uiNumber = 14;
     public static Font gameFont;
     public static Image[] gnImage;
     public static int gnImageNumber = 42;
@@ -64,6 +64,9 @@ public class GameGLJPanel extends GLJPanel {
     public static int zbImageNumber = 18;
     public static Image[] ztImage;
     public static int ztImageNumber = 12;
+    public static Image[] buildImage;
+    public static Image kongImage;
+    public static int buildImageNumber = 20;
     GameManage gameManage;
     int lastWidth;
     int lastHeight;
@@ -172,6 +175,17 @@ public class GameGLJPanel extends GLJPanel {
                 System.out.println(ex.getMessage() + "UI文件读取失败");
             }
         }
+
+        buildImage = new Image[buildImageNumber];
+        try {
+            buildImage[0] = ImageIO.read(new File("image\\build\\huodui.png"));
+            buildImage[1] = ImageIO.read(new File("image\\build\\zhangpeng.png"));
+            buildImage[2] = ImageIO.read(new File("image\\build\\fangzi.png"));
+            buildImage[3] = ImageIO.read(new File("image\\build\\jianta.png"));
+            kongImage = ImageIO.read(new File("image\\build\\kong.png"));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage() + "建筑文件读取失败");
+        }
         color = new Color[9];
         color[0] = new Color(0f, 0f, 0f);
         color[1] = new Color(1f, 1f, 0f);
@@ -209,12 +223,16 @@ public class GameGLJPanel extends GLJPanel {
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 5; j++) {
                     g.setColor(Color.red);
-                    g.fillRect((int) ((0.702f + j * 0.05f) * this.getWidth()), (int) ((0.73f + 0.055f * i) * this.getHeight()), (int) (0.049f * this.getWidth()), (int) (0.053f * this.getHeight()));
+                    if (buildImage[i*4+j] != null) {
+                        g.drawImage(buildImage[i*5+j], (int) ((0.702f + j * 0.05f) * this.getWidth()), (int) ((0.73f + 0.055f * i) * this.getHeight()), (int) (0.049f * this.getWidth()), (int) (0.053f * this.getHeight()), this);
+                    } else {
+                        g.drawImage(kongImage, (int) ((0.702f + j * 0.05f) * this.getWidth()), (int) ((0.73f + 0.055f * i) * this.getHeight()), (int) (0.049f * this.getWidth()), (int) (0.053f * this.getHeight()), this);
+                    }
                 }
             }
         }
-        for (int i = 0; i < 4; i++) {
-            g.drawImage(uiImage[i + 9], (int) (this.getWidth() * (0.65f + 0.085f * i)), (int) (this.getHeight() * 0.03f), (int) (this.getWidth() * 0.03f), (int) (this.getHeight() * 0.03f), null);
+        for (int i = 0; i < 5; i++) {
+            g.drawImage(uiImage[i + 9], (int) (this.getWidth() * (0.565f + 0.085f * i)), (int) (this.getHeight() * 0.03f), (int) (this.getWidth() * 0.03f), (int) (this.getHeight() * 0.03f), null);
         }
 
     }
@@ -234,9 +252,9 @@ public class GameGLJPanel extends GLJPanel {
             } else {
                 tg.setColor(Color.red);
             }
-            if (build.getBuild(i).isEnable() && GameMap.isLooked[team][build.getBuild(i).x][build.getBuild(i).y]) {
-                int x = build.getBuild(i).getX();
-                int y = build.getBuild(i).getY();
+            if (build.getBuild(i).isEnable() && GameMap.isLooked[team][(int)build.getBuild(i).x][(int)build.getBuild(i).y]) {
+                int x = (int)build.getBuild(i).getX();
+                int y = (int)build.getBuild(i).getY();
                 tg.fillRect(x * 5, y * 5, 5, 5);
             }
         }
@@ -483,7 +501,7 @@ public class GameGLJPanel extends GLJPanel {
             g.drawImage(gnImage[16], w, h + cha * i, rectW, rectH, this);
             g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
             double speed = npc.getSpeedFight() * gameManage.getUser().getGameSpeed();
-            double maxSpeed = Npc.maxSpeedFight;
+            double maxSpeed = Npc.MAX_SPEED_FIGHT;
             double tempS = speed / maxSpeed;
             tempS = (int) (tempS * 100);
             str = String.valueOf((float) tempS / 100);
@@ -606,7 +624,7 @@ public class GameGLJPanel extends GLJPanel {
                 g.drawImage(gnImage[16], w, h + cha * i, rectW, rectH, this);
                 g.drawImage(uiImage[6], w, h + cha * i, rectW, rectH, null);
                 double speed = build.getSpeedFight() * gameManage.getUser().getGameSpeed();
-                double maxSpeed = Npc.maxSpeedFight;
+                double maxSpeed = Npc.MAX_SPEED_FIGHT;
                 double tempS = speed / maxSpeed;
                 tempS = (int) (tempS * 100);
                 str = String.valueOf((float) tempS / 100);
@@ -649,10 +667,11 @@ public class GameGLJPanel extends GLJPanel {
         //int fontW = tfm.charWidth('a');
         //int fontH = tfm.getHeight();
         GameUser user = gameManage.getUser();
-        g.drawString(getString(user.getGold()), (int) (this.getWidth() * (0.69f + 0.085f * 0)), (int) (this.getHeight() * 0.05f));
-        g.drawString(getString(user.getRock()), (int) (this.getWidth() * (0.69f + 0.085f * 1)), (int) (this.getHeight() * 0.05f));
-        g.drawString(getString(user.getWater()),(int) (this.getWidth() * (0.69f + 0.085f * 2)), (int) (this.getHeight() * 0.05f));
-        g.drawString(getString(user.getWood()), (int) (this.getWidth() * (0.69f + 0.085f * 3)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getGold()), (int) (this.getWidth() * (0.683f + 0.085f * -1)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getRock()), (int) (this.getWidth() * (0.683f + 0.085f * 0)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getWater()), (int) (this.getWidth() * (0.683f + 0.085f * 1)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getWood()), (int) (this.getWidth() * (0.683f + 0.085f * 2)), (int) (this.getHeight() * 0.05f));
+        g.drawString(getString(user.getPopulation())+"/"+getString(user.getMaxPopulation()), (int) (this.getWidth() * (0.675f + 0.085f * 3)), (int) (this.getHeight() * 0.05f));
         g.setFont(lastFont);
     }
 

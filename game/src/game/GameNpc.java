@@ -1,7 +1,7 @@
 package game;
 
 //********************************************
-import build.Build;
+import npc.Build;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLException;
@@ -131,7 +131,7 @@ public class GameNpc {
             gameManage.getMainBar().barNum += 1 / 100f;
             int x = r.nextInt(GameMap.width);
             int y = r.nextInt(GameMap.height);
-            NpcObject tNpc = new NpcObject(r.nextInt(size), x, y, GameMap.getHigh(x, y), 0.02f,r.nextInt(7)+1);
+            NpcObject tNpc = new NpcObject(r.nextInt(size), x, y, GameMap.getHigh(x, y), 0.02f, r.nextInt(7) + 1);
             tNpc.init(npcExample.get(tNpc.getId()));
             gameManage.getNpc().addNpc(tNpc);
         }
@@ -194,8 +194,8 @@ public class GameNpc {
             NpcObject tNpcObject = npc.get(i);
             float tx = tNpcObject.getX();
             float ty = tNpcObject.getY();
-            if (tNpcObject.isEnable()&&isLooking[team][(int)(tx+0.5f)][(int)(ty+0.5f)]-GameThread.gameTime>0) {
-                if (tx >= x - range && tx < x + range && ty >= y - range && ty< y + range) {
+            if (tNpcObject.isEnable() && isLooking[team][(int) (tx + 0.5f)][(int) (ty + 0.5f)] - GameThread.gameTime > 0) {
+                if (tx >= x - range && tx < x + range && ty >= y - range && ty < y + range) {
                     gl.glPushMatrix();
                     gl.glTranslatef(tNpcObject.getX(), tNpcObject.getHigh() + 0.5f, tNpcObject.getY());
                     if (tNpcObject.getState() != NpcObject.STATE_CHOOSE) {
@@ -246,6 +246,9 @@ public class GameNpc {
         try {
             lock.writeLock().lock();
             npc.add(b);
+            if (b.getTeam() == gameManage.getUser().getTeam()&&gameManage.getUser().getPopulation()<gameManage.getUser().getMaxPopulation()) {
+                gameManage.getUser().setPopulation(gameManage.getUser().getPopulation()+1);
+            }
         } finally {
             lock.writeLock().unlock();
         }

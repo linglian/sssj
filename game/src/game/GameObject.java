@@ -16,6 +16,9 @@ public class GameObject {
     public float objectHigh;
     public float cx, cy, cz;
 
+    public GameObject(){
+
+    }
     public GameObject(float width, float height, float high, float cx, float cy, float cz) {
         this.objectWidth = width;
         this.objectHeight = height;

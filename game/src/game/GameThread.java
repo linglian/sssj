@@ -1,7 +1,7 @@
 package game;
 
 //********************************************
-import build.Build;
+import npc.Build;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import npc.NpcObject;

@@ -1,7 +1,7 @@
 package game;
-
+                
 //********************************************
-import build.Build;
+import npc.Build;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;

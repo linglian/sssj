@@ -1,6 +1,6 @@
 package listener;
 
-import build.Flame;
+import npc.Flame;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import game.GameGLEventListener;

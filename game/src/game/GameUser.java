@@ -2,7 +2,7 @@ package game;
 
 //********************************************
 import function.GameFunction;
-import build.Build;
+import npc.Build;
 import function.GameFunctionBuild;
 import java.util.Random;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -31,19 +31,21 @@ public class GameUser {
     int wood;
     int water;
     int rock;
+    int population;
+    int maxPopulation;
     int peopleNumber;
     int maxpeopleNumber;
     int buildBuildId;
     int moveState;
-    
+
     float x;
     float y;
     float high = 12.725f;
     float wide = 7.5f;
     float moveSpeed = 0.5f;
-    
+
     double rotate = 0.0;
-    
+
     boolean isView = false;
     boolean isBuild = false;
     boolean isTurn = false;
@@ -52,20 +54,20 @@ public class GameUser {
     boolean isChooseDragged = false;
     boolean isCtrl = false;
     boolean flow = false;
-    
+
     Vector3 mouseOfWorld;
     Vector3 draggedMouseOfWorld;
-    
-    private NpcObject[] chooseNpc;
+
+    private NpcObject[] chooseNpc;//选择ing的npc
     int chooseNpcNum;
-    private Build[] chooseBuild;
+    private Build[] chooseBuild;//选择ing的建筑
     int chooseBuildNum;
-    NpcObject choseNpc;
-    Build choseBuild;
-    
-    GameFunction []gameFunction;
-    GameFunctionBuild []npcBuildFunction;
-    
+    NpcObject choseNpc;//鼠标停留的npc
+    Build choseBuild;//鼠标停留的建筑
+
+    GameFunction[] gameFunction;
+    GameFunctionBuild[] npcBuildFunction;
+
     public int range = 13;
     public float lastX;
     public float lastY;
@@ -78,7 +80,7 @@ public class GameUser {
     public static final int MOVE_UP_LEFT = 6;
     public static final int MOVE_DOWN_LEFT = 7;
     public static final int MOVE_DOWN_RIGHT = 8;
-    
+
     public static final int TEAM_1 = 1;
     public static final int TEAM_2 = 2;
     public static final int TEAM_3 = 3;
@@ -86,7 +88,7 @@ public class GameUser {
     public static final int TEAM_5 = 5;
     public static final int TEAM_6 = 6;
     public static final int TEAM_7 = 7;
-    
+
     GameManage gameManage;
     ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
 
@@ -98,19 +100,38 @@ public class GameUser {
         draggedMouseOfWorld = new Vector3(0, 0, 0);
         this.x = x;
         this.y = y;
+        population = 0;
+        maxPopulation = 40;
         Random r = new Random();
         this.team = r.nextInt(7) + 1;
         this.npcBuildFunction = new GameFunctionBuild[20];
-        for(int i=0;i<20;i++){
-           this.npcBuildFunction[i] = new GameFunctionBuild(gameManage,i);
+        for (int i = 0; i < 20; i++) {
+            this.npcBuildFunction[i] = new GameFunctionBuild(gameManage, i);
         }
     }
 
-    public void setNpcBuild(){
-        for(int i=0;i<20;i++){
+    public int getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(int population) {
+        this.population = population;
+    }
+
+    public int getMaxPopulation() {
+        return maxPopulation;
+    }
+
+    public void setMaxPopulation(int maxPopulation) {
+        this.maxPopulation = maxPopulation;
+    }
+
+    public void setNpcBuild() {
+        for (int i = 0; i < 20; i++) {
             this.gameFunction = this.npcBuildFunction;
         }
     }
+
     public GameFunction[] getGameFunction() {
         return gameFunction;
     }
@@ -127,7 +148,6 @@ public class GameUser {
         this.isView = isView;
     }
 
-    
     public boolean isCtrl() {
         return isCtrl;
     }
@@ -136,7 +156,6 @@ public class GameUser {
         this.isCtrl = isCtrl;
     }
 
-    
     public int getGold() {
         return gold;
     }
@@ -310,15 +329,11 @@ public class GameUser {
         return buildBuildId;
     }
 
-    public void setBuildBuildId(int buildBuildId) {
-        this.buildBuildId = buildBuildId;
-    }
-
     public boolean isBuild() {
         return isBuild;
     }
 
-    public void setIsBuild(boolean isBuild,int build) {
+    public void setIsBuild(boolean isBuild, int build) {
         this.isBuild = isBuild;
         this.buildBuildId = build;
     }
