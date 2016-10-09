@@ -182,6 +182,11 @@ public class GameGLJPanel extends GLJPanel {
             buildImage[1] = ImageIO.read(new File("image\\build\\zhangpeng.png"));
             buildImage[2] = ImageIO.read(new File("image\\build\\fangzi.png"));
             buildImage[3] = ImageIO.read(new File("image\\build\\jianta.png"));
+            buildImage[4] = ImageIO.read(new File("image\\build\\bingying.png"));
+            buildImage[5] = ImageIO.read(new File("image\\build\\tushuguan.png"));
+            buildImage[6] = ImageIO.read(new File("image\\build\\shuijing.png"));
+            buildImage[7] = ImageIO.read(new File("image\\build\\guanghuan.png"));
+            buildImage[8] = ImageIO.read(new File("image\\build\\jing.png"));
             kongImage = ImageIO.read(new File("image\\build\\kong.png"));
         } catch (IOException ex) {
             System.out.println(ex.getMessage() + "建筑文件读取失败");
@@ -223,7 +228,7 @@ public class GameGLJPanel extends GLJPanel {
             for (int i = 0; i < 4; i++) {
                 for (int j = 0; j < 5; j++) {
                     g.setColor(Color.red);
-                    if (buildImage[i*4+j] != null) {
+                    if (buildImage[i*5+j] != null) {
                         g.drawImage(buildImage[i*5+j], (int) ((0.702f + j * 0.05f) * this.getWidth()), (int) ((0.73f + 0.055f * i) * this.getHeight()), (int) (0.049f * this.getWidth()), (int) (0.053f * this.getHeight()), this);
                     } else {
                         g.drawImage(kongImage, (int) ((0.702f + j * 0.05f) * this.getWidth()), (int) ((0.73f + 0.055f * i) * this.getHeight()), (int) (0.049f * this.getWidth()), (int) (0.053f * this.getHeight()), this);

@@ -121,6 +121,9 @@ public class GameMap {
 
     public static float getHigh(int x, int y) {
         float high = 0;
+        if(x<0||y<0||x>=GameMap.width||y>=GameMap.height){
+            return 0;
+        }
         for (int i = 0; i < 10; i++) {
             if (map[x][y][i] == null || map[x][y][i].id == -1) {
                 break;

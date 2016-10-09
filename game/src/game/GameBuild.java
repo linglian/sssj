@@ -138,6 +138,26 @@ public class GameBuild {
         temp.init("model\\3ds\\jianta.3DS", "model\\3ds");
         buildModel.add(temp);
         gameManage.getMainBar().barNum++;
+        temp = new Game3DS(glad);
+        temp.init("model\\3ds\\bingying.3DS", "model\\3ds");
+        buildModel.add(temp);
+        gameManage.getMainBar().barNum++;
+        temp = new Game3DS(glad);
+        temp.init("model\\3ds\\tushuguan.3DS", "model\\3ds");
+        buildModel.add(temp);
+        gameManage.getMainBar().barNum++;
+        temp = new Game3DS(glad);
+        temp.init("model\\3ds\\shuijing.3DS", "model\\3ds");
+        buildModel.add(temp);
+        gameManage.getMainBar().barNum++;
+        temp = new Game3DS(glad);
+        temp.init("model\\3ds\\guanghuan.3DS", "model\\3ds");
+        buildModel.add(temp);
+        gameManage.getMainBar().barNum++;
+        temp = new Game3DS(glad);
+        temp.init("model\\3ds\\jing.3DS", "model\\3ds");
+        buildModel.add(temp);
+        gameManage.getMainBar().barNum++;
         loadBuild();
         replay();
     }
